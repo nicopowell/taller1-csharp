@@ -5,7 +5,7 @@ while (!Directory.Exists(path))
 {
     Console.Write("El path no existe, ingrese otro: ");
     path = Console.ReadLine();
-} 
+}
 
 Console.WriteLine("\n=== Carpetas ===");
 foreach (var carpeta in Directory.GetDirectories(path))
@@ -18,22 +18,25 @@ Console.WriteLine("\n=== Archivos ===");
 foreach (var archivo in Directory.GetFiles(path))
 {
     var info = new FileInfo(archivo);
-    Console.WriteLine(info.Name + " - " + info.Length / 1024 + " KB");
+    double sizeKb = Math.Round(info.Length / 1024.0, 2);
+    Console.WriteLine($"{info.Name} - {sizeKb} KB");
 }
 
-string csv = path + @"\reporte_archivos.csv";
+string csv = Path.Combine(path, "reporte_archivos.csv");
 
-if (!File.Exists(csv))
-{
-    File.Create(csv);
-}
+// Si el archivo existe, no hay que crear con File.Create porque deja abierto el handle
+// Solo abrimos para escritura con StreamWriter (sobrescribiendo)
 
 FileInfo[] infoArchivos = new DirectoryInfo(path).GetFiles();
 
-using (StreamWriter sw = new(csv))
+using (StreamWriter sw = new StreamWriter(csv))
 {
+    // Es buena práctica poner cabecera
+    sw.WriteLine("Nombre del Archivo,Tamaño (KB),Fecha de Última Modificación");
     foreach (var info in infoArchivos)
     {
-        sw.WriteLine(info.Name + "," + info.Length / 1024 + "," + info.LastWriteTime);
+        double sizeKb = Math.Round(info.Length / 1024.0, 2);
+        string fecha = info.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+        sw.WriteLine($"{info.Name},{sizeKb},{fecha}");
     }
 }
