@@ -52,4 +52,4 @@ foreach (var producto in informe.BajosDeStock)
 }
 Console.WriteLine($"Producto de id 5: {informe.NombreProducto}");
 
-await cargaDatos.GuardarInforme("Informe.json", informe);
+cargaDatos.GuardarInforme("Informe.json", informe);
